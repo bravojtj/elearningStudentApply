@@ -290,18 +290,18 @@ server:
 ```
 8088 port로 Order서비스 정상 호출
 
-![증빙1](https://github.com/bigot93/forthcafe/blob/main/images/gateway.png)
+![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
 
 # CQRS/saga/correlation
 Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
 주문(ordered) 실행 후 MyPages 화면
 
-![증빙3](https://github.com/bigot93/forthcafe/blob/main/images/order_pages.png)
+![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
 
 주문(OrderCancelled) 취소 후 MyPages 화면
 
-![증빙4](https://github.com/bigot93/forthcafe/blob/main/images/cancel_pages.png)
+![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
 위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigned 되고
 
