@@ -208,7 +208,7 @@ DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 �
 
 - 원격 주문 (Order 주문 후 결과)
 
-![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-test.png)
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
 
 # GateWay 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
@@ -216,7 +216,6 @@ API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수
 ```yaml
 server:
   port: 8088
-
 ---
 
 spring:
@@ -224,10 +223,10 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: Order
+        - id: Apply
           uri: http://localhost:8081
           predicates:
-            - Path=/orders/** 
+            - Path=/applies/** 
         - id: Pay
           uri: http://localhost:8082
           predicates:
@@ -259,10 +258,10 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: Order
-          uri: http://Order:8080
+        - id: Apply
+          uri: http://Apply:8080
           predicates:
-            - Path=/orders/** 
+            - Path=/applies/** 
         - id: Pay
           uri: http://Pay:8080
           predicates:
