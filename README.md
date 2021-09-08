@@ -25,12 +25,12 @@
 ![EventStormingV1](https://github.com/bigot93/forthcafe/blob/main/images/eventingstorming_forthcafe.png)
 
 # 헥사고날 아키텍처 다이어그램 도출
-![증빙10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/1-hex_diagram.png)
+![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/1-hex_diagram.png)
 
 # 구현
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각각의 포트넘버는 8081 ~ 8084, 8088 이다)
 ```
-cd Order
+cd Apply
 mvn spring-boot:run  
 
 cd Pay
@@ -51,52 +51,48 @@ msaez.io를 통해 구현한 Aggregate 단위로 Entity를 선언 후, 구현을
 
 Entity Pattern과 Repository Pattern을 적용하기 위해 Spring Data REST의 RestRepository를 적용하였다.
 
-**Order 서비스의 Order.java**
+**Apply 서비스의 Apply.java**
 ```java 
-package forthcafe;
+package store;
 
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
-
-import forthcafe.external.Pay;
-import forthcafe.external.PayService;
+import store.external.Pay;
 
 @Entity
-@Table(name="Order_table")
-public class Order {
+@Table(name="Apply_table")
+public class Apply {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String ordererName;
-    private String menuName;
-    private Long menuId;
-    private Double price;
-    private Integer quantity;
-    private String status;
+    private String studentId;
+    private String studentName;
+    private String bookId;
+    private String bookName;
+    private Integer qty;
+    private Double amount;
+    private String applyStatus;
+    private String address;
 
     @PostPersist
     public void onPostPersist(){
-        Ordered ordered = new Ordered();
-        BeanUtils.copyProperties(this, ordered);
-        ordered.setStatus("Order");
+        Applied applied = new Applied();
+        BeanUtils.copyProperties(this, applied);
+        applied.setApplyStatus("Apply");
+        applied.publish(); 
         
-        ordered.publish();
-
         Pay pay = new Pay();
         BeanUtils.copyProperties(this, pay);
-        
-        OrderApplication.applicationContext.getBean(PayService.class).pay(pay);
+        ApplyApplication.applicationContext.getBean(store.external.PayService.class).pay(pay);
     }
     
     @PreRemove
     public void onPreRemove(){
-        OrderCancelled orderCancelled = new OrderCancelled();
-        BeanUtils.copyProperties(this, orderCancelled);
-
-        orderCancelled.publishAfterCommit();
+        ApplyCancelled applyCancelled = new ApplyCancelled();
+        BeanUtils.copyProperties(this, applyCancelled);
+        applyCancelled.publishAfterCommit();
     }
-
 
     public Long getId() {
         return id;
@@ -105,108 +101,106 @@ public class Order {
     public void setId(Long id) {
         this.id = id;
     }
-    public Double getPrice() {
-        return price;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-    public String getStatus() {
-        return status;
+    public String getStudentName() {
+        return studentName;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+    public String getBookId() {
+        return bookId;
     }
 
-    public String getOrdererName() {
-        return ordererName;
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
+    public String getBookName() {
+        return bookName;
     }
 
-    public void setOrdererName(String ordererName) {
-        this.ordererName = ordererName;
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
+    }
+    public Integer getQty() {
+        return qty;
     }
 
-    public String getMenuName() {
-        return menuName;
+    public void setQty(Integer qty) {
+        this.qty = qty;
+    }
+    public Double getAmount() {
+        return amount;
     }
 
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+    public String getApplyStatus() {
+        return applyStatus;
     }
 
-    public Long getMenuId() {
-        return menuId;
+    public void setApplyStatus(String applyStatus) {
+        this.applyStatus = applyStatus;
+    }
+    public String getAddress() {
+        return address;
     }
 
-    public void setMenuId(Long menuId) {
-        this.menuId = menuId;
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
 ```
 
 **Pay 서비스의 PolicyHandler.java**
 ```java
-package forthcafe;
+package store;
 
-import forthcafe.config.kafka.KafkaProcessor;
-
-import java.util.List;
-import java.util.Optional;
-
+import store.config.kafka.KafkaProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
 public class PolicyHandler{
-
-    @Autowired
-    PayRepository payRepository;
+    @Autowired PayRepository payRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void onStringEventListener(@Payload String eventString){
+    public void wheneverApplyCancelled_PayCancel(@Payload ApplyCancelled applyCancelled){
 
-    }
+        if(!applyCancelled.validate()) return;
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverOrderCancelled_(@Payload OrderCancelled orderCancelled){
+        Optional<Pay> Optional = payRepository.findById(applyCancelled.getId());
 
-        try {
-            if(orderCancelled.isMe()){
-                System.out.println("##### OrderCancelled listener  : " + orderCancelled.toJson());
-    
-                Optional<Pay> Optional = payRepository.findById(orderCancelled.getId());
-    
-                if( Optional.isPresent()) {
-                    Pay pay = Optional.get();
-    
-                    // 객체에 이벤트의 eventDirectValue 를 set 함
-                    pay.setId(orderCancelled.getId());
-                    pay.setMenuId(orderCancelled.getMenuId());
-                    pay.setMenuName(orderCancelled.getMenuName());
-                    pay.setOrdererName(orderCancelled.getOrdererName());
-                    pay.setPrice(orderCancelled.getPrice());
-                    pay.setQuantity(orderCancelled.getQuantity());
-                    pay.setStatus("payCancelled");
+        if( Optional.isPresent()) {
+            Pay pay = Optional.get();
 
-                    payRepository.save(pay);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            pay.setId(applyCancelled.getId());
+            pay.setStudentId(applyCancelled.getStudentId());
+            pay.setStudentName(applyCancelled.getStudentName());
+            pay.setBookId(applyCancelled.getBookId());
+            pay.setBookName(applyCancelled.getBookName());
+            pay.setQty(applyCancelled.getQty());
+            pay.setAmount(applyCancelled.getAmount());
+            pay.setApplyStatus("payCancelled");
+            pay.setAddress(applyCancelled.getAddress());
+
+            payRepository.save(pay);
         }
     }
 
+    @StreamListener(KafkaProcessor.INPUT)
+    public void whatever(@Payload String eventString){}
 }
 ```
 
@@ -214,7 +208,7 @@ DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 �
 
 - 원격 주문 (Order 주문 후 결과)
 
-![증빙2](https://github.com/bigot93/forthcafe/blob/main/images/order.png)
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-test.png)
 
 # GateWay 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
