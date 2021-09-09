@@ -470,13 +470,13 @@ env:
 kubectl create configmap servicetype --from-literal=svctype=PRODUCT -n default -n default
 kubectl get configmap servicetype -o yaml
 ```
-![image](https://user-images.githubusercontent.com/5147735/109768817-bb77ba80-7c3c-11eb-8856-7fca5213f5b1.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-1-configmap.png)
 
 * Apply 데이터 1건 추가 후 로그 확인
 ```
 kubectl logs {pod ID}
 ```
-![image](https://user-images.githubusercontent.com/5147735/109760887-dc3b1280-7c32-11eb-8284-f4544d7b72b0.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-2-configmap-print.png)
 
 
 ## Deploy / Pipeline
@@ -575,7 +575,7 @@ kubectl expose deploy gateway --type=LoadBalancer --port=8080
 kubectl logs {pod명}
 ```
 * Service, Pod, Deploy 상태 확인
-![image](https://user-images.githubusercontent.com/5147735/109769165-2de89a80-7c3d-11eb-8472-2281468fb771.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-3-getall.png)
 
 
 * deployment.yml  참고
@@ -609,21 +609,12 @@ spec:
           image: skteam33.azurecr.io/apply:v2
           ports:
             - containerPort: 8080
-          # autoscale start
-          resources:
-              limits:
-                cpu: 500m
-              requests:
-                cpu: 200m
-          # autoscale end
-          ### config map start
           env:
             - name: CFG_SERVICE_TYPE
               valueFrom:
                 configMapKeyRef:
                   name: servicetype
-                  key: svctype
-          ### config map end         
+                  key: svctype      
           readinessProbe:
             httpGet:
               path: '/actuator/health'
@@ -645,11 +636,11 @@ spec:
 
 ## 서킷 브레이킹
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
-* Order -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
+* Apply -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
 * Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 
-```
-// Order서비스 application.yml
+```yaml
+# Apply서비스 application.yml
 
 feign:
   hystrix:
@@ -662,15 +653,15 @@ hystrix:
 ```
 
 
-```
+```java
 // Pay 서비스 Pay.java
 
  @PostPersist
     public void onPostPersist(){
-        Payed payed = new Payed();
-        BeanUtils.copyProperties(this, payed);
-        payed.setStatus("Pay");
-        payed.publishAfterCommit();
+        PayCompleted payCompleted = new PayCompleted();
+        BeanUtils.copyProperties(this, payCompleted);
+        payCompleted.setApplyStatus("Pay");
+        payCompleted.publishAfterCommit();
 
         try {
                  Thread.currentThread().sleep((long) (400 + Math.random() * 220));
@@ -679,8 +670,8 @@ hystrix:
          }
 ```
 
-* /home/project/team/forthcafe/yaml/siege.yaml
-```
+* C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes\deployment.yml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -693,17 +684,18 @@ spec:
 
 * siege pod 생성
 ```
-/home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+cd C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes
+kubectl apply -f deployment.yml
 ```
 
 * 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
-siege -c100 -t30S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c100 -t60S  -v --content-type "application/json" 'http://20.200.200.122:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
-![image](https://user-images.githubusercontent.com/5147735/109762408-dd207400-7c33-11eb-8464-325d781867ae.png)
-![image](https://user-images.githubusercontent.com/5147735/109762376-d1cd4880-7c33-11eb-87fb-b739aa2d6621.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-4-siege.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-histrixl.png)
 
 
 
