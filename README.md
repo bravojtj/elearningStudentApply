@@ -455,7 +455,7 @@ git clone https://github.com/jinmojeon/elearningStudentApply.git
 ```
 
 ## ConfigMap
-* Apply > deployment.yml 파일에 설정
+* Apply 서비스 deployment.yml 파일에 설정
 ```
 env:
    - name: CFG_SERVICE_TYPE
@@ -637,7 +637,7 @@ spec:
 ## 서킷 브레이킹
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 * Apply -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
-* Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
+* Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 열리도록 (요청을 빠르게 실패처리, 차단) 설정
 
 ```yaml
 # Apply서비스 application.yml
@@ -688,11 +688,11 @@ cd C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes
 kubectl apply -f deployment.yml
 ```
 
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 50명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
-siege -c100 -t60S  -v --content-type "application/json" 'http://20.200.200.122:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c50 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-4-siege.png)
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-histrixl.png)
@@ -702,30 +702,32 @@ siege -c100 -t60S  -v --content-type "application/json" 'http://20.200.200.122:8
 ## 오토스케일 아웃
 * 앞서 서킷 브레이커(CB) 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 
-* order 서비스 deployment.yml 설정
-```
- resources:
-            limits:
-              cpu: 500m
-            requests:
-              cpu: 200m
+* Apply 서비스 deployment.yml 설정
+```yaml
+          resources:
+              limits:
+                cpu: 500m
+              requests:
+                cpu: 200m
 ```
 * 다시 배포해준다.
 ```
-/home/project/team/forthcafe/Order/mvn package
-az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
-kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy order --type=ClusterIP --port=8080
-```
-
-* Order 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다
+cd C:\Lv2Assessment\Source\StudentApply\Apply
+mvn package
+az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
+kubectl apply -f kubernetes/deployment.yml
+kubectl apply -f kubernetes/service.yaml
 
 ```
-kubectl autoscale deploy order --min=1 --max=10 --cpu-percent=15
+
+* Apply 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 50프로를 넘어서면 replica 를 2개까지 늘려준다
+
+```
+kubectl autoscale deploy apply --min=1 --max=2 --cpu-percent=50
 ```
 
-* /home/project/team/forthcafe/yaml/siege.yaml
-```
+* C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes\deployment.yml
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -738,25 +740,26 @@ spec:
 
 * siege pod 생성
 ```
-/home/project/team/forthcafe/yaml/kubectl apply -f siege.yaml
+cd C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes
+kubectl apply -f deployment.yml
 ```
 
-* siege를 활용해서 워크로드를 1000명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+* siege를 활용해서 워크로드를 50명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c1000 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/orders POST {"memuId":2, "quantity":1}'
-siege -c1000 -t60S  -v --content-type "application/json" 'http://52.141.61.164:8080/orders POST {"memuId":2, "quantity":1}'
+siege -c50 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
 
 * 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
 ```
-kubectl get deploy order -w
+kubectl get deploy apply -w
 ```
-![image](https://user-images.githubusercontent.com/5147735/109771563-4c9c6080-7c40-11eb-9bf8-1efef17bedee.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/8-1-autoscale-w.png)
 ```
 kubectl get pod
 ```
-![image](https://user-images.githubusercontent.com/5147735/109771259-f3ccc800-7c3f-11eb-8ebe-9ff4ab9c2242.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/8-2-autoscale-pod.png)
 
 
 
