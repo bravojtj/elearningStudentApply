@@ -483,7 +483,7 @@ kubectl logs {pod ID}
 
 * build 하기
 ```
-cd C:\Lv2Assessment\Source\StudentApply
+cd C:\Lv2Assessment\Source\elearningStudentApply
 
 cd Apply
 mvn package 
@@ -670,7 +670,7 @@ hystrix:
          }
 ```
 
-* C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes\deployment.yml
+* C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes\deployment.yml
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -684,7 +684,7 @@ spec:
 
 * siege pod 생성
 ```
-cd C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes
+cd C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes
 kubectl apply -f deployment.yml
 ```
 
@@ -712,7 +712,7 @@ siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:808
 ```
 * 다시 배포해준다.
 ```
-cd C:\Lv2Assessment\Source\StudentApply\Apply
+cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
 mvn package
 az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
 kubectl apply -f kubernetes/deployment.yml
@@ -726,7 +726,7 @@ kubectl apply -f kubernetes/service.yaml
 kubectl autoscale deploy apply --min=1 --max=2 --cpu-percent=50
 ```
 
-* C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes\deployment.yml
+* C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes\deployment.yml
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -740,7 +740,7 @@ spec:
 
 * siege pod 생성
 ```
-cd C:\Lv2Assessment\Source\StudentApply\Util\siege\kubernetes
+cd C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes
 kubectl apply -f deployment.yml
 ```
 
@@ -768,7 +768,7 @@ kubectl get pod
 
 * Pay 서비스 버젼을 변경하여 배포한다.
 ```
-cd C:\Lv2Assessment\Source\StudentApply\Pay
+cd C:\Lv2Assessment\Source\elearningStudentApply\Pay
 mvn package
 az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v2 .
 kubectl apply -f kubernetes/deployment.yml
