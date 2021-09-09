@@ -455,7 +455,7 @@ git clone https://github.com/jinmojeon/elearningStudentApply.git
 ```
 
 ## ConfigMap
-* deployment.yml 파일에 설정
+* Apply > deployment.yml 파일에 설정
 ```
 env:
    - name: CFG_SERVICE_TYPE
@@ -469,11 +469,10 @@ env:
 ```
 kubectl create configmap servicetype --from-literal=svctype=PRODUCT -n default -n default
 kubectl get configmap servicetype -o yaml
-
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109768817-bb77ba80-7c3c-11eb-8856-7fca5213f5b1.png)
 
-* order 1건 추가후 로그 확인
+* Apply 데이터 1건 추가 후 로그 확인
 ```
 kubectl logs {pod ID}
 ```
@@ -484,9 +483,9 @@ kubectl logs {pod ID}
 
 * build 하기
 ```
-cd /forthcafe
+cd C:\Lv2Assessment\Source\StudentApply
 
-cd Order
+cd Apply
 mvn package 
 
 cd ..
@@ -498,11 +497,11 @@ cd Delivery
 mvn package
 
 cd ..
-cd gateway
+cd MyPage
 mvn package
 
 cd ..
-cd MyPage
+cd gateway
 mvn package
 ```
 
@@ -510,70 +509,68 @@ mvn package
 ```
 cd .. 
 cd Order
-az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
+az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
 kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy order --type=ClusterIP --port=8080
+kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd Pay
-az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
+az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v1 .
 kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy pay --type=ClusterIP --port=8080
+kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd Delivery
-az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
+az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
 kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy delivery --type=ClusterIP --port=8080
-
+kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd MyPage
-az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
+az acr build --registry skteam33 --image skteam33.azurecr.io/mypage:v1 .
 kubectl apply -f kubernetes/deployment.yml 
-kubectl expose deploy mypage --type=ClusterIP --port=8080
+kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd gateway
-az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
-kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1
-kubectl expose deploy gateway --type=LoadBalancer --port=8080
+az acr build --registry skteam33 --image skteam33.azurecr.io/gateway:v1 .
+kubectl apply -f kubernetes/deployment.yml 
+kubectl apply -f kubernetes/service.yaml 
 ```
 
 
 * Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법2)
 ```
 cd ..
-cd Order
-az acr build --registry skteam01 --image skteam01.azurecr.io/order:v1 .
-kubectl create deploy order --image=skteam01.azurecr.io/order:v1
+cd Apply
+az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
+kubectl create deploy order --image=skteam33.azurecr.io/apply:v1
 kubectl expose deploy order --type=ClusterIP --port=8080
 
 cd .. 
 cd Pay
-az acr build --registry skteam01 --image skteam01.azurecr.io/pay:v1 .
-kubectl create deploy pay --image=skteam01.azurecr.io/pay:v1
+az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v1 .
+kubectl create deploy pay --image=skteam33.azurecr.io/pay:v1
 kubectl expose deploy pay --type=ClusterIP --port=8080
 
 
 cd .. 
 cd Delivery
-az acr build --registry skteam01 --image skteam01.azurecr.io/delivery:v1 .
-kubectl create deploy delivery --image=skteam01.azurecr.io/delivery:v1
+az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
+kubectl create deploy delivery --image=skteam33.azurecr.io/delivery:v1
 kubectl expose deploy delivery --type=ClusterIP --port=8080
-
-
-cd .. 
-cd gateway
-az acr build --registry skteam01 --image skteam01.azurecr.io/gateway:v1 .
-kubectl create deploy gateway --image=skteam01.azurecr.io/gateway:v1
-kubectl expose deploy gateway --type=LoadBalancer --port=8080
 
 cd .. 
 cd MyPage
-az acr build --registry skteam01 --image skteam01.azurecr.io/mypage:v1 .
-kubectl create deploy mypage --image=skteam01.azurecr.io/mypage:v1
+az acr build --registry skteam33 --image skteam33.azurecr.io/mypage:v1 .
+kubectl create deploy mypage --image=skteam33.azurecr.io/mypage:v1
 kubectl expose deploy mypage --type=ClusterIP --port=8080
+
+cd .. 
+cd gateway
+az acr build --registry skteam33 --image skteam33.azurecr.io/gateway:v1 .
+kubectl create deploy gateway --image=skteam33.azurecr.io/gateway:v1
+kubectl expose deploy gateway --type=LoadBalancer --port=8080
 
 kubectl logs {pod명}
 ```
@@ -590,7 +587,61 @@ kubectl logs {pod명}
 5. resource 설정 (autoscaling)
 ```
 
-![image](https://user-images.githubusercontent.com/5147735/109643506-a8f77580-7b97-11eb-926b-e6c922aa2d1b.png)
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apply
+  labels:
+    app: apply
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apply
+  template:
+    metadata:
+      labels:
+        app: apply
+    spec:
+      containers:
+        - name: apply
+          image: skteam33.azurecr.io/apply:v2
+          ports:
+            - containerPort: 8080
+          # autoscale start
+          resources:
+              limits:
+                cpu: 500m
+              requests:
+                cpu: 200m
+          # autoscale end
+          ### config map start
+          env:
+            - name: CFG_SERVICE_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: servicetype
+                  key: svctype
+          ### config map end         
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+```
 
 ## 서킷 브레이킹
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
