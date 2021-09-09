@@ -351,15 +351,19 @@ public interface DeliveryService {
 **동작 확인**
 
 잠시 Delivery 서비스 중지
+
 ![증빙7](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-1-delivery_stop.png)
 
 주문 취소 요청시 Pay 서비스 변화 없음
+
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-cancel.png)
 
 Delivery 서비스 재기동 후 주문취소
+
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-3-delete.png)
 
 Pay 서비스 상태를 보면 2번 주문 정상 취소 처리
+
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-4-paycancelled.png)
 
 Fallback 설정
