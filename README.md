@@ -206,7 +206,7 @@ public class PolicyHandler{
 
 DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
 
-- 원격 주문 (Order 주문 후 결과)
+- 원격 주문 (Apply 주문 후 결과)
 
 ![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
 
@@ -288,18 +288,18 @@ spring:
 server:
   port: 8080
 ```
-8088 port로 Order서비스 정상 호출
+8088 port로 Apply서비스 정상 호출
 
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
 
 # CQRS/saga/correlation
 Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
-주문(ordered) 실행 후 MyPages 화면
+Apply 실행 후 MyPages 화면
 
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
 
-주문(OrderCancelled) 취소 후 MyPages 화면
+Apply 취소 후 MyPages 화면
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
@@ -508,7 +508,7 @@ mvn package
 * Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법1 : yml파일 이용한 deploy)
 ```
 cd .. 
-cd Order
+cd Apply
 az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
@@ -544,8 +544,8 @@ kubectl apply -f kubernetes/service.yaml
 cd ..
 cd Apply
 az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
-kubectl create deploy order --image=skteam33.azurecr.io/apply:v1
-kubectl expose deploy order --type=ClusterIP --port=8080
+kubectl create deploy apply --image=skteam33.azurecr.io/apply:v1
+kubectl expose deploy apply --type=ClusterIP --port=8080
 
 cd .. 
 cd Pay
@@ -766,7 +766,7 @@ kubectl get pod
 
 ## 무정지 재배포 (Readiness Probe)
 
-* 버젼을 변경하여 배포해준다.
+* Pay 서비스 버젼을 변경하여 배포한다.
 ```
 cd C:\Lv2Assessment\Source\StudentApply\Pay
 mvn package
@@ -776,22 +776,22 @@ kubectl apply -f kubernetes/deployment.yml
 
 * 배포전
 
-![image](https://user-images.githubusercontent.com/5147735/109743733-89526280-7c14-11eb-93da-0ddd3cd18e22.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-1-deploy-before.png)
 
 * 배포중
 
-![image](https://user-images.githubusercontent.com/5147735/109744076-11386c80-7c15-11eb-849d-6cf4e2c72675.png)
-![image](https://user-images.githubusercontent.com/5147735/109744186-3a58fd00-7c15-11eb-8da3-f11b6194fc6b.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-2-deploy-create.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-3-deploy-terminate.png)
 
 * 배포후
 
-![image](https://user-images.githubusercontent.com/5147735/109744225-45139200-7c15-11eb-8efa-07ac40162ded.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-4-deploy-complete.png)
 
 
 
 
 ## Self-healing (Liveness Probe)
-* order 서비스 deployment.yml   livenessProbe 설정을 port 8089로 변경 후 배포 하여 liveness probe 가 동작함을 확인 
+* Delivery 서비스 deployment.yml   livenessProbe 설정을 port 8089로 변경 후 배포 하여 liveness probe 가 동작함을 확인 
 ```
     livenessProbe:
       httpGet:
@@ -801,9 +801,14 @@ kubectl apply -f kubernetes/deployment.yml
       periodSeconds: 5
 ```
 
-![image](https://user-images.githubusercontent.com/5147735/109740864-4fcb2880-7c0f-11eb-86ad-2aabb0197881.png)
-![image](https://user-images.githubusercontent.com/5147735/109742082-c0734480-7c11-11eb-9a57-f6dd6961a6d2.png)
+```
+kubectl describe deploy delivery
+```
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/10-1-liveness-port.png)
 
-
+```
+kubectl get pod -w
+```
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/10-2-liveness-pod.png)
 
 
