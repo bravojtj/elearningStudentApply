@@ -303,7 +303,7 @@ Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
-위와 같이 주문을 하게되면 Order > Pay > Delivery > MyPage로 주문이 Assigned 되고
+위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 되고
 
 주문 취소가 되면 Status가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
@@ -312,7 +312,7 @@ Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본
 위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
 
 # 폴리글랏
-Order 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏을 만족시키고 있다.
+Apply 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏을 만족시키고 있다.
 
 **Order의 pom.xml DB 설정 코드**
 
@@ -328,10 +328,11 @@ Order 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏�
 
 **Pay 서비스 내 external.DeliveryService**
 ```java
-package forthcafe.external;
+package store.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -339,11 +340,12 @@ import java.util.Date;
 
 @FeignClient(name="Delivery", url="${api.url.delivery}") 
 public interface DeliveryService {
-
+    // command
     @RequestMapping(method = RequestMethod.POST, path = "/deliveries", consumes = "application/json")
-    public void delivery(@RequestBody Delivery delivery);
+    public void deliveryCancel(@RequestBody Delivery delivery);
 
 }
+
 ```
 
 **동작 확인**
@@ -361,37 +363,70 @@ Pay 서비스 상태를 보면 2번 주문 정상 취소 처리됨
 ![증빙9](https://github.com/bigot93/forthcafe/blob/main/images/%EB%8F%99%EA%B8%B0%ED%99%944.png)
 
 Fallback 설정
-![image](https://user-images.githubusercontent.com/5147735/109755775-f9b7ae80-7c29-11eb-8add-bdb295dc94e1.png)
-![image](https://user-images.githubusercontent.com/5147735/109755797-04724380-7c2a-11eb-8fcd-1c5135000ee5.png)
+```java
+package store.external;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+@FeignClient(name = "Pay", url = "${api.url.pay}", fallback = PayServiceImpl.class)
+public interface PayService {
+    @RequestMapping(method = RequestMethod.POST, path = "/pays", consumes = "application/json")
+    public void pay(@RequestBody Pay pay);
+}
+
+```
+```java
+package store.external;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class PayServiceImpl implements PayService {
+    @Override
+    public void pay(Pay pay) {
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@ StudentApply Pay service is BUSY @@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@   Try again later   @@@@@@@@@@@@@@@@@@@@@");
+    }
+}
+
+```
 
 
-Fallback 결과(Pay service 종료 후 Order 추가 시)
+Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)
 ![image](https://user-images.githubusercontent.com/5147735/109755716-dab91c80-7c29-11eb-9099-ba585115a2a6.png)
 
 # 운영
 
 ## CI/CD
-* 카프카 설치
+* 카프카 설치(Windows)
 ```
-- 헬름 설치
-참고 : http://msaschool.io/operation/implementation/implementation-seven/
-curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
-chmod 700 get_helm.sh
-./get_helm.sh
+A.	chocolatey 설치
+-	cmd.exe를 관리자 권한으로 실행합니다.
+-	다음 명령줄을 실행합니다.
+@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command " [System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
-- Azure Only
-kubectl patch storageclass managed -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+B.	Helm 설치
+cmd.exe에서 아래 명령어 실행 .
+choco install kubernetes-helm
 
-- 카프카 설치
-kubectl --namespace kube-system create sa tiller      # helm 의 설치관리자를 위한 시스템 사용자 생성
+C.	Helm 에게 권한을 부여하고 초기화
+kubectl --namespace kube-system create sa tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 
-helm repo add incubator https://charts.helm.sh/incubator
-helm repo update
-kubectl create ns kafka
-helm install my-kafka --namespace kafka incubator/kafka
-
+D.	Kafka 설치 및 실행
+helm repo add incubator https://charts.helm.sh/incubator 
+helm repo update 
+kubectl create ns kafka 
+helm install my-kafka --namespace kafka incubator/kafka 
 kubectl get po -n kafka -o wide
+
+E.	Kafka 실행 여부
+kubectl -n kafka exec -it my-kafka-0 -- /bin/sh
+ps –ef  | grep kafka
+
 ```
 * Topic 생성
 ```
