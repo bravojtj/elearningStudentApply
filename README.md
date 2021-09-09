@@ -434,7 +434,7 @@ ps –ef  | grep kafka
 ```
 * Topic 생성
 ```
-kubectl -n kafka exec my-kafka-0 -- /usr/bin/kafka-topics --zookeeper my-kafka-zookeeper:2181 --topic forthcafe --create --partitions 1 --replication-factor 1
+kubectl -n kafka exec my-kafka-0 -- /usr/bin/kafka-topics --zookeeper my-kafka-zookeeper:2181 --topic store --create --partitions 1 --replication-factor 1
 ```
 * Topic 확인
 ```
@@ -442,32 +442,34 @@ kubectl -n kafka exec my-kafka-0 -- /usr/bin/kafka-topics --zookeeper my-kafka-z
 ```
 * 이벤트 발행하기
 ```
-kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic forthcafe
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-producer --broker-list my-kafka:9092 --topic store
 ```
 * 이벤트 수신하기
 ```
-kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootstrap-server my-kafka:9092 --topic forthcafe --from-beginning
+kubectl -n kafka exec -ti my-kafka-0 -- /usr/bin/kafka-console-consumer --bootstrap-server my-kafka:9092 --topic store --from-beginning
 ```
 
 * 소스 가져오기
 ```
-git clone https://github.com/bigot93/forthcafe.git
+git clone https://github.com/jinmojeon/elearningStudentApply.git
 ```
 
 ## ConfigMap
 * deployment.yml 파일에 설정
 ```
 env:
-   - name: SYS_MODE
+   - name: CFG_SERVICE_TYPE
      valueFrom:
        configMapKeyRef:
-         name: systemmode
-         key: sysmode
+         name: servicetype
+         key: svctype
 ```
+
 * Configmap 생성, 정보 확인
 ```
-kubectl create configmap systemmode --from-literal=sysmode=PRODUCT
-kubectl get configmap systemmode -o yaml
+kubectl create configmap servicetype --from-literal=svctype=PRODUCT -n default -n default
+kubectl get configmap servicetype -o yaml
+
 ```
 ![image](https://user-images.githubusercontent.com/5147735/109768817-bb77ba80-7c3c-11eb-8856-7fca5213f5b1.png)
 
