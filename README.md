@@ -765,6 +765,15 @@ kubectl get pod
 
 
 ## 무정지 재배포 (Readiness Probe)
+```
+* 버젼을 변경하여 배포해준다.
+```
+cd C:\Lv2Assessment\Source\StudentApply\Pay
+mvn package
+az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v2 .
+kubectl apply -f kubernetes/deployment.yml
+```
+
 * 배포전
 
 ![image](https://user-images.githubusercontent.com/5147735/109743733-89526280-7c14-11eb-93da-0ddd3cd18e22.png)
