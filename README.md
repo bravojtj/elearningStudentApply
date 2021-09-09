@@ -407,27 +407,27 @@ Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)
 ## CI/CD
 * 카프카 설치(Windows)
 ```
-A.	chocolatey 설치
+A. chocolatey 설치
 -	cmd.exe를 관리자 권한으로 실행합니다.
 -	다음 명령줄을 실행합니다.
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command " [System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
-B.	Helm 설치
+B. Helm 설치
 cmd.exe에서 아래 명령어 실행 .
 choco install kubernetes-helm
 
-C.	Helm 에게 권한을 부여하고 초기화
+C. Helm 에게 권한을 부여하고 초기화
 kubectl --namespace kube-system create sa tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 
-D.	Kafka 설치 및 실행
+D. Kafka 설치 및 실행
 helm repo add incubator https://charts.helm.sh/incubator 
 helm repo update 
 kubectl create ns kafka 
 helm install my-kafka --namespace kafka incubator/kafka 
 kubectl get po -n kafka -o wide
 
-E.	Kafka 실행 여부
+E. Kafka 실행 여부
 kubectl -n kafka exec -it my-kafka-0 -- /bin/sh
 ps –ef  | grep kafka
 
