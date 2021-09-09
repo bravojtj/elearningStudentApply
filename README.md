@@ -772,7 +772,6 @@ cd C:\Lv2Assessment\Source\StudentApply\Pay
 mvn package
 az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v2 .
 kubectl apply -f kubernetes/deployment.yml
-```
 
 * 배포전
 
