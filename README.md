@@ -528,7 +528,7 @@ public class PolicyHandler{
 # 교재신청 처리 후 교재신청 및 결제 처리 Event 진행 확인
 ```
 ![9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-6-async-1.png)
-![10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-7-async-1.png)
+![10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-7-async-2.png)
 ```
 # 배송 서비스 기동
 cd rent
@@ -536,7 +536,7 @@ mvn spring-boot:run
 
 # 배송 정보 등록 확인
 ```
-![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-1.png)
+![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-3.png)
 
 
 
