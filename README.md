@@ -22,7 +22,7 @@
    
 # Event Storming 결과
 
-![EventStormingV1](https://github.com/bigot93/forthcafe/blob/main/images/eventingstorming_forthcafe.png)
+![EventStormingV1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/0-eventstorm.png)
 
 # 헥사고날 아키텍처 다이어그램 도출
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/1-hex_diagram.png)
