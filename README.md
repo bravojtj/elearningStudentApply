@@ -482,7 +482,6 @@ public class PayServiceImpl implements PayService {
 Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-5-fallback.png)
 
-
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 결제가 이루어진 후에 배송 서비스로 이를 알려주는 행위는 동기식이 아니라 비동기식으로 처리하여 배송를 위하여 결제가 블로킹 되지 않도록 처리한다.
 
@@ -528,16 +527,16 @@ public class PolicyHandler{
 # 배송 서비스 (Delivery) 를 잠시 내려놓음
 # 교재신청 처리 후 교재신청 및 결제 처리 Event 진행 확인
 ```
-![9](https://user-images.githubusercontent.com/30138356/125189677-3fd5ec00-e274-11eb-9aee-f68b40516ce7.PNG)
-![10](https://user-images.githubusercontent.com/30138356/125189710-6e53c700-e274-11eb-9cdf-8c1c66830a35.PNG)
+![9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-6-async-1.png)
+![10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-7-async-1.png)
 ```
 # 배송 서비스 기동
 cd rent
 mvn spring-boot:run
 
-# 베송 정보 등록 확인
+# 배송 정보 등록 확인
 ```
-![11](https://user-images.githubusercontent.com/30138356/125189746-9fcc9280-e274-11eb-8ede-260754fa66d9.PNG)
+![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-1.png)
 
 
 
