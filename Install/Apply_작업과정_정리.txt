@@ -1,0 +1,140 @@
+- 소스 수정 내역
+1. Apply > Apply.java 
+28line : applied.publish(); -> applied.publishAfterCommit();
+35line : Application -> OrderApplication
+46line : onPreRemove 메소드 추가 및 onPostPersist메소드에서 orderCancelled.publishAfterCommit 로직 이동
+
+2. MyPage > MyPageViewHandler > 모든 OrderStatus메소드 > orderCancelled -> orderCancelled.getOrderStatus()로 변경
+
+3. Pay 
+pay > 39line > Application -> PayApplication
+PayService > 11라인 http://localhost:8082로 변경(향후 yaml로 변경)
+
+4. Apply > application.yml 파일에 추가
+########## default
+
+# pay service 호출 주소
+api:
+  url:
+    pay: http://localhost:8082
+
+# circuit breaker 설정 start
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  command:
+    # 전역설정
+    default:
+      #execution.isolation.thread.timeoutInMilliseconds: 610
+      execution.isolation.thread.timeoutInMilliseconds: 30000
+# circuit breaker 설정 end
+
+
+########## docker
+
+# pay service 호출 주소
+api:
+  url:
+    pay: http://Pay:8080
+
+# circuit breaker 설정 start
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  command:
+    # 전역설정
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 610
+      # execution.isolation.thread.timeoutInMilliseconds: 250
+      #execution.isolation.thread.timeoutInMilliseconds: 30000
+# circuit breaker 설정 end
+
+5. Pay > pay.java > onPostPersist메소드에 아래 내용 추가
+
+        // delay test시 주석해제
+        //try {
+        //        Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+        //} catch (InterruptedException e) {
+        //        e.printStackTrace();
+        //}
+
+6. kubernetes > 각 프로젝트 
+########### deployment.yml 파일
+대문자로 시작하는 name은 소문자로 변경 : Apply -> apply, Pay -> pay, Delivery -> delivery, MyPage -> mypage
+gateway에는 파일 추가
+containers image를 acr주소 및 적용 version으로 변경 : image: skteam33.azurecr.io/apply:v1
+
+########### services.yml 파일
+대문자로 시작하는 name은 소문자로 변경 : Apply -> apply, Pay -> pay, Delivery -> delivery, MyPage -> mypage
+gateway에는 파일 추가
+
+7. MyPage의 pom.xml DB 설정 코드
+<!-- 폴리글랏 DB 설정 start -->
+<!--
+<dependency>
+	<groupId>com.h2database</groupId>
+	<artifactId>h2</artifactId>
+	<scope>runtime</scope>
+</dependency>
+-->
+      
+<dependency>
+    <groupId>org.apache.derby</groupId>
+    <artifactId>derby</artifactId>
+    <version>10.15.2.0</version>
+    <scope>runtime</scope>
+</dependency>
+<!-- 폴리글랏 DB 설정 end -->
+
+8. Apply > payserviceimpl.java 파일 생성
+
+9. Apply > kubernetes > autoscale 및 config map 추가
+
+          # autoscale start
+          resources:
+              limits:
+                cpu: 500m
+              requests:
+                cpu: 200m
+          # autoscale end
+          ### config map start
+          #env:
+          #  - name: SYS_MODE
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: systemmode
+          #        key: sysmode
+          ### config map end       
+
+10. PolicyHandler 로직 구현??????
+
+11. seige / httpie yml 파일 생성
+
+12. Pay > application.yml 파일에 추가
+
+# delivery service 호출 주소
+api:
+  url:
+    delivery: http://localhost:8083  
+
+
+
+- 테스트 URL
+- 조회
+http POST http://localhost:8081/orders
+http POST http://localhost:8082/pays
+http POST http://localhost:8083/deliveries
+http POST http://localhost:8084/myPages
+- gateway
+http POST http://localhost:8088/orders
+- order 등록
+http POST http://localhost:8081/orders customerId="customer1" customerName="홍길동1" productId="prd1" productName="prdName1" qty=10 amount=1000 orderStatus="A" address="ABC"
+
+
+
+configmap 사용?
+kafka azure only?
