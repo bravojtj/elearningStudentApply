@@ -26,6 +26,7 @@ public class Pay {
 
     @PostPersist
     public void onPostPersist(){
+        // kafka publish
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
         payCompleted.setApplyStatus("Pay"); // modify by jjm
