@@ -933,14 +933,14 @@ kubectl apply -f kubernetes/deployment.yml
 - order.yml 파일에 Readiness Probe 부분 설정
 
 ```yaml
-readinessProbe:
-  httpGet:
-    path: '/actuator/health'
-    port: 8080
-  initialDelaySeconds: 10
-  timeoutSeconds: 2
-  periodSeconds: 5
-  failureThreshold: 10
+    readinessProbe:
+      httpGet:
+        path: '/actuator/health'
+        port: 8080
+      initialDelaySeconds: 10
+      timeoutSeconds: 2
+      periodSeconds: 5
+      failureThreshold: 10
 ```
 
 - 디플로이 시작
@@ -968,7 +968,6 @@ kubectl apply -f kubernetes/deployment.yml
         port: 8089
       initialDelaySeconds: 5
       periodSeconds: 5
-```
 
 ```
 kubectl describe deploy delivery
