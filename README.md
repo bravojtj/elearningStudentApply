@@ -131,9 +131,7 @@ mvn spring-boot:run
 ```
 
 ## DDD 의 적용
-msaez.io를 통해 구현한 Aggregate 단위로 Entity를 선언 후, 구현을 진행하였다.
-
-Entity Pattern과 Repository Pattern을 적용하기 위해 Spring Data REST의 RestRepository를 적용하였다.
+각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 Apply 마이크로 서비스).이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하였다.
 
 **Apply 서비스의 Apply.java**
 ```java 
@@ -243,49 +241,18 @@ public class Apply {
     }
 }
 ```
-
-**Pay 서비스의 PolicyHandler.java**
-```java
+- Entity Pattern 과 Repository Pattern 을 적용하여 JPA 를 통하여 다양한 데이터소스 유형 (RDB or NoSQL) 에 대한 별도의 처리가 없도록 데이터 접근 어댑터를 자동 생성하기 위하여 Spring Data REST 의 RestRepository 를 적용하였다
+```JAVA
 package store;
 
-import store.config.kafka.KafkaProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.stereotype.Service;
-import java.util.Optional;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@Service
-public class PolicyHandler{
-    @Autowired PayRepository payRepository;
+@RepositoryRestResource(collectionResourceRel="applies", path="applies")
+public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>{
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverApplyCancelled_PayCancel(@Payload ApplyCancelled applyCancelled){
-
-        if(!applyCancelled.validate()) return;
-
-        Optional<Pay> Optional = payRepository.findById(applyCancelled.getId());
-
-        if( Optional.isPresent()) {
-            Pay pay = Optional.get();
-
-            pay.setId(applyCancelled.getId());
-            pay.setStudentId(applyCancelled.getStudentId());
-            pay.setStudentName(applyCancelled.getStudentName());
-            pay.setBookId(applyCancelled.getBookId());
-            pay.setBookName(applyCancelled.getBookName());
-            pay.setQty(applyCancelled.getQty());
-            pay.setAmount(applyCancelled.getAmount());
-            pay.setApplyStatus("payCancelled");
-            pay.setAddress(applyCancelled.getAddress());
-
-            payRepository.save(pay);
-        }
-    }
-
-    @StreamListener(KafkaProcessor.INPUT)
-    public void whatever(@Payload String eventString){}
 }
+
 ```
 
 DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
