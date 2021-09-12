@@ -349,17 +349,17 @@ server:
 ## CQRS/saga/correlation
 - Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
-**Apply 실행 후 MyPages 화면**
+-- Apply 실행 후 MyPages 화면
 
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
 
-**Apply 취소 후 MyPages 화면**
+  - Apply 취소 후 MyPages 화면**
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
-- 위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 되고
+위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 되고
 
-주문 취소가 되면 Status가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
+주문 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
 또한 Correlation을 Key를 활용하여 Id를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
 
