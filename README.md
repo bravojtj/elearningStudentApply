@@ -925,6 +925,37 @@ kubectl apply -f kubernetes/deployment.yml
 
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-4-deploy-complete.png)
 
+## 무정지 재배포(Readiness Probe)
+- 현재 정상적으로 동작중인 상황 확인
+
+![image](https://user-images.githubusercontent.com/22028798/125400383-c6add480-e3ec-11eb-8e0b-aeddf0a0c8fb.png)
+
+- order.yml 파일에 Readiness Probe 부분 설정
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: '/actuator/health'
+    port: 8080
+  initialDelaySeconds: 10
+  timeoutSeconds: 2
+  periodSeconds: 5
+  failureThreshold: 10
+```
+
+- 디플로이 시작
+
+- ```
+cd C:\Lv2Assessment\Source\elearningStudentApply\Delivery
+mvn package
+az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
+
+kubectl apply -f kubernetes/deployment.yml
+```
+
+- siege로 부하 시작 -> 가용률 100% 확인
+
+![image](https://user-images.githubusercontent.com/22028798/125400628-18565f00-e3ed-11eb-9c9c-ea4c64c6717d.png)
 
 
 
