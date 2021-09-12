@@ -365,25 +365,30 @@ spec:
 ```
 
 ## CQRS/Correlation-key
-- Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
+- CQRS : Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
 신청 / 결제 / 배송 서비스의 전체 현황 및 상태 조회를 제공하기 위해 MyPage를 구성하였다.
 
-**Apply 실행 후 MyPages 화면**
+신규 교재 신청 정보를 등록한다.
+**Apply 등록**
 
-![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
+![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
 
-**Apply 취소 후 MyPages 화면**
+위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 된다.
+
+MyPage CQRS 결과는 아래와 같다
+**Apply 실행 후 MyPages**
+
+![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
+
+- Correlation-key 
+
+Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 신청 취소한다.
+주문 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
-위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 되고
-
-주문 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
-
-또한 Correlation을 Key를 활용하여 Id를 Key값을 하고 원하는 주문하고 서비스간의 공유가 이루어 졌다.
-
-위 결과로 서로 다른 마이크로 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
+위 결과로 서로 다른 마이크로 서비스 간에 상호 연결되어 있음을 알 수 있다.
 
 ## 폴리글랏 퍼시스턴스
 - Apply 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏 퍼시스턴스를 만족시키고 있다.
