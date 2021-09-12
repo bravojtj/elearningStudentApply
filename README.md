@@ -161,7 +161,7 @@ public class Apply {
     public void onPostPersist(){
         Applied applied = new Applied();
         BeanUtils.copyProperties(this, applied);
-        applied.setApplyStatus("Apply");
+        applied.setApplyStatus("applyCompleted");
         applied.publish(); 
         
         Pay pay = new Pay();
@@ -495,7 +495,7 @@ public class PayServiceImpl implements PayService {
         // kafka publish
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.setApplyStatus("Pay"); // modify by jjm
+        payCompleted.setApplyStatus("payCompleted");
         payCompleted.publishAfterCommit();  
     }  
 ```
@@ -519,7 +519,7 @@ public class PolicyHandler{
         delivery.setBookName(payCompleted.getBookName());
         delivery.setQty(payCompleted.getQty());
         delivery.setAmount(payCompleted.getAmount());
-        delivery.setApplyStatus("Delivery");
+        delivery.setApplyStatus("deliveryCompleted");
         delivery.setDeliveryAddress(payCompleted.getAddress());
         deliveryRepository.save(delivery);
     
@@ -805,7 +805,7 @@ hystrix:
     public void onPostPersist(){
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.setApplyStatus("Pay");
+        payCompleted.setApplyStatus("payCompleted");
         payCompleted.publishAfterCommit();
 
         try {
