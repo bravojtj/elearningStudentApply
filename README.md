@@ -342,18 +342,18 @@ spring:
 server:
   port: 8080
 ```
-- 8088 port로 Apply서비스 정상 호출
+**8088 port로 Apply서비스 정상 호출**
 
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
 
 ## CQRS/saga/correlation
 - Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
--- Apply 실행 후 MyPages 화면
+**Apply 실행 후 MyPages 화면**
 
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
 
-  - Apply 취소 후 MyPages 화면**
+**Apply 취소 후 MyPages 화면**
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
@@ -402,21 +402,25 @@ public interface DeliveryService {
 
 ```
 
-**동작 확인**
+### 동작 확인
 
-잠시 Delivery 서비스 중지
+**잠시 Delivery 서비스 중지**
+
 ![증빙7](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-1-delivery_stop.png)
 
-주문 취소 요청시 Pay 서비스 변화 없음
+**주문 취소 요청시 Pay 서비스 변화 없음**
+
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-cancel.png)
 
-Delivery 서비스 재기동 후 주문취소
+**Delivery 서비스 재기동 후 주문취소**
+
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-3-delete.png)
 
-Pay 서비스 상태를 보면 2번 주문 정상 취소 처리
+**Pay 서비스 상태를 보면 2번 주문 정상 취소 처리**
+
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-4-paycancelled.png)
 
-Fallback 설정
+**Fallback 설정**
 ```java
 package store.external;
 
@@ -449,12 +453,12 @@ public class PayServiceImpl implements PayService {
 ```
 
 
-Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)
+**Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)**
+
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-5-fallback.png)
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
-결제가 이루어진 후에 배송 서비스로 이를 알려주는 행위는 동기식이 아니라 비동기식으로 처리하여 배송를 위하여 결제가 블로킹 되지 않도록 처리한다.
-
+- 결제가 이루어진 후에 배송 서비스로 이를 알려주는 행위는 동기식이 아니라 비동기식으로 처리하여 배송를 위하여 결제가 블로킹 되지 않도록 처리한다.
 이를 위하여 결제서비스에 기록을 남긴 후에 곧바로 결제완료 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
 ``` JAVA
   ...
@@ -467,7 +471,8 @@ Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)
         payCompleted.publishAfterCommit();  
     }  
 ```
-배송 서비스에서는 결제완료 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+
+- 배송 서비스에서는 결제완료 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 ``` JAVA
 public class PolicyHandler{
  ...
@@ -492,13 +497,16 @@ public class PolicyHandler{
     
     }    
 ```
-배송 서비스는 교재신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 배송 서비스가 유지보수 등의 이류로 인해 잠시 내려간 상태라도 신청을 받는데 문제가 없다:
+
+- 배송 서비스는 교재신청/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 배송 서비스가 유지보수 등의 이류로 인해 잠시 내려간 상태라도 신청을 받는데 문제가 없다:
 ```
 # 배송 서비스 (Delivery) 를 잠시 내려놓음
 # 교재신청 처리 후 교재신청 및 결제 처리 Event 진행 확인
 ```
+
 ![9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-6-async-1.png)
 ![10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-7-async-2.png)
+
 ```
 # 배송 서비스 기동
 cd rent
@@ -506,6 +514,7 @@ mvn spring-boot:run
 
 # 배송 정보 등록 확인
 ```
+
 ![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-3.png)
 
 
