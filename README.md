@@ -383,7 +383,8 @@ MyPage CQRS 결과는 아래와 같다
 
 - Correlation-key 
 
-Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 신청 취소한다.
+Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 신청된 교재를 동일한 Id로 취소한다.
+
 주문 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
