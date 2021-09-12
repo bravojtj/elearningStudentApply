@@ -911,6 +911,8 @@ kubectl get pod
 ## 무정지 재배포(Readiness Probe)
 - 현재 정상적으로 동작중인 상황 확인
 
+>>>>>>>>>>>>>> 이미지 수정 필요
+
 ![image](https://user-images.githubusercontent.com/22028798/125400383-c6add480-e3ec-11eb-8e0b-aeddf0a0c8fb.png)
 
 - order.yml 파일에 Readiness Probe 부분 설정
@@ -936,6 +938,8 @@ kubectl apply -f kubernetes/deployment.yml
 ```
 
 - siege로 부하 시작 -> 가용률 100% 확인
+
+>>>>>>>>>>>>>> 이미지 수정 필요
 
 ![image](https://user-images.githubusercontent.com/22028798/125400628-18565f00-e3ed-11eb-9c9c-ea4c64c6717d.png)
 
@@ -963,5 +967,3 @@ kubectl describe deploy delivery
 kubectl get pod -w
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/10-2-liveness-pod.png)
-
-
