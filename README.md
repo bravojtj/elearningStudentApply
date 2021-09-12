@@ -28,19 +28,19 @@
 
 기능적 요구사항
 1. 수강생이 교재를 신청한다.
-2. 수강생이 결재한다.
-3. 결재가 완료되면 신청 내역을 보낸다.
+2. 수강생이 결제한다.
+3. 결제가 완료되면 신청 내역을 보낸다.
 4. 신청내역의 교재 배송을 시작한다.
 5. 주문 상태를 수강생이 조회 할 수 있다.
 6. 수강생이 신청을 취소 할 수 있다.
-7. 결재 취소시 배송이 같이 취소 된다.
+7. 결제 취소시 배송이 같이 취소 된다.
 
 비기능적 요구사항
 1. 트랜젝션
-   1. 결재 취소 시 교재 배송이 진행되지 않는다 → Sync 호출
+   1. 결제 취소 시 교재 배송이 진행되지 않는다 → Sync 호출
 2. 장애격리
-   1. 배송에서 장애가 발생해도 결재와 신청은 가능해야 한다 →Async(event-driven), Eventual Consistency
-   1. 결재가 과부화되면 결재를 잠시 후 처리하도록 유도한다 → Circuit breaker, fallback
+   1. 배송에서 장애가 발생해도 결제와 신청은 가능해야 한다 →Async(event-driven), Eventual Consistency
+   1. 결제가 과부화되면 결제를 잠시 후 처리하도록 유도한다 → Circuit breaker, fallback
 3. 성능
    1. 수강생이 교재 신청상태를 신청내역 조회에서 확인할 수 있어야 한다 → CQRS
 
@@ -404,7 +404,9 @@ Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 
 
 ## 동기식 호출 과 Fallback 처리
 
-- 분석단계에서의 조건 중 하나로 결재(Pay)와 배송(Delivery) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository에 의해 노출되어있는 REST 서비스를 FeignClient를 이용하여 호출하도록 한다.
+- 분석단계에서의 조건 중 하나로 결제 서비스(Pay)와 배송 서비스(Delivery) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository에 의해 노출되어있는 REST 서비스를 FeignClient를 이용하여 호출하도록 한다.
+
+결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 ( url 은 Config Map 적용 )
 
 **Pay 서비스 내 external.DeliveryService**
 ```java
@@ -430,19 +432,19 @@ public interface DeliveryService {
 
 ### 동작 확인
 
-**잠시 Delivery 서비스 중지**
+**잠시 배송 서비스(Delivery) 중지**
 
 ![증빙7](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-1-delivery_stop.png)
 
-**주문 취소 요청시 Pay 서비스 변화 없음**
+**주문 취소 요청시 결제 서비스(Pay) 변화 없음**
 
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-cancel.png)
 
-**Delivery 서비스 재기동 후 주문취소**
+**배송 서비스(Delivery) 기동 후 주문취소**
 
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-3-delete.png)
 
-**Pay 서비스 상태를 보면 2번 주문 정상 취소 처리**
+**결제 서비스(Pay) 상태를 보면 신청 정상 취소 처리**
 
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-4-paycancelled.png)
 
