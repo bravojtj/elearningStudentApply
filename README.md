@@ -967,12 +967,15 @@ kubectl apply -f kubernetes/deployment.yml
         port: 8089
       initialDelaySeconds: 5
       periodSeconds: 5
+```
 
+- Delivery 서비스 프토 변경 확인
 ```
 kubectl describe deploy delivery
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/10-1-liveness-port.png)
 
+- Pod 재시작 확인
 ```
 kubectl get pod -w
 ```
