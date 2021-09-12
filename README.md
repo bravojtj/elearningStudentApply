@@ -342,6 +342,24 @@ spring:
 server:
   port: 8080
 ```
+
+- gateway service.yaml에 loadBalancer 적용
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: gateway
+```
+
 **8088 port로 Apply서비스 정상 호출**
 
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
