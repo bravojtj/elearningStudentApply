@@ -945,7 +945,7 @@ kubectl apply -f kubernetes/deployment.yml
 
 - 디플로이 시작
 
-- ```
+```yaml
 cd C:\Lv2Assessment\Source\elearningStudentApply\Delivery
 mvn package
 az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
