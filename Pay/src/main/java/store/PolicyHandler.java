@@ -22,6 +22,7 @@ public class PolicyHandler{
         Optional<Pay> Optional = payRepository.findById(applyCancelled.getId());
 
         if( Optional.isPresent()) {
+            System.out.println("\n\n##### listener PayCancel Optional ID : " + applyCancelled.getId() + "/BookName" + applyCancelled.getBookName() + "\n\n");
             Pay pay = Optional.get();
 
             // 객체에 이벤트의 eventDirectValue 를 set 함

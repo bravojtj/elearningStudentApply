@@ -22,6 +22,7 @@ public class Apply {
 
     @PostPersist
     public void onPostPersist(){
+        System.out.println("################## Apply onPostPersist Applied");
         // configMap 설정 // add by jm
         String cfgServiceType = System.getenv("CFG_SERVICE_TYPE");
         if(cfgServiceType == null) cfgServiceType = "STORE";
@@ -30,7 +31,7 @@ public class Apply {
         // kafka에 push
         Applied applied = new Applied();
         BeanUtils.copyProperties(this, applied);
-        applied.setApplyStatus("Apply");
+        applied.setApplyStatus("applyCompleted");
         // applied.publishAfterCommit(); // modify by jm
         applied.publish(); 
         
@@ -45,14 +46,16 @@ public class Apply {
     }
     
     // add by jm
-    @PreRemove
-    public void onPreRemove(){
+    @PostUpdate
+    public void onPostUpdate(){
+        System.out.println("################## Apply onPostUpdate ApplyCancelled");
         // kafka에 push
         ApplyCancelled applyCancelled = new ApplyCancelled();
         BeanUtils.copyProperties(this, applyCancelled);
+        applyCancelled.setApplyStatus("applyCancelled");
         applyCancelled.publishAfterCommit();
     }
-
+    
     public Long getId() {
         return id;
     }

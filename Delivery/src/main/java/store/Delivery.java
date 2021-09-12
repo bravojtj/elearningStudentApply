@@ -25,6 +25,7 @@ public class Delivery {
     public void onPostPersist(){
         Deliveried deliveried = new Deliveried();
         BeanUtils.copyProperties(this, deliveried);
+        deliveried.setApplyStatus("deliveryCompleted");
         deliveried.publishAfterCommit();
 
         // DeliveryCancelled deliveryCancelled = new DeliveryCancelled();

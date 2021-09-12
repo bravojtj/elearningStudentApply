@@ -34,7 +34,7 @@ public class MyPageViewHandler {
             myPage.setBookName(applied.getBookName());
             myPage.setBookQty(applied.getQty());
             myPage.setAmount(applied.getAmount());
-            myPage.setApplyStatus("applied");
+            myPage.setApplyStatus("applyCompleted");
             myPage.setDeliveryAddress(applied.getAddress());
             // view 레파지 토리에 save
             myPageRepository.save(myPage);
@@ -115,7 +115,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                myPage.setApplyStatus("deliveried");
+                myPage.setApplyStatus("deliveryCompleted");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }

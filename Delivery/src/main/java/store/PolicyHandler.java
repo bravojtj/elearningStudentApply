@@ -19,6 +19,8 @@ public class PolicyHandler{
         
         System.out.println("\n\n##### listener Delivery : " + payCompleted.toJson() + "\n\n");
 
+        System.out.println("\n\n##### listener Delivery Optional ID : " + payCompleted.getId() + "/BookName" + payCompleted.getBookName() + "\n\n");
+
         Delivery delivery = new Delivery();
         delivery.setId(payCompleted.getId());
         delivery.setStudentId(payCompleted.getStudentId());
@@ -27,7 +29,7 @@ public class PolicyHandler{
         delivery.setBookName(payCompleted.getBookName());
         delivery.setQty(payCompleted.getQty());
         delivery.setAmount(payCompleted.getAmount());
-        delivery.setApplyStatus("Delivery");
+        delivery.setApplyStatus("deliveryCompleted");
         delivery.setDeliveryAddress(payCompleted.getAddress());
         deliveryRepository.save(delivery);
     

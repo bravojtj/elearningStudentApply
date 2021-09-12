@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pay
-          image: skteam33.azurecr.io/pay:v3
+          image: skteam33.azurecr.io/pay:v6
           ports:
             - containerPort: 8080
           readinessProbe:
