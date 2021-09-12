@@ -901,30 +901,6 @@ kubectl get pod
 
 
 
-
-## 무정지 재배포 (Readiness Probe)
-
-* Pay 서비스 버젼을 변경하여 배포한다.
-```
-cd C:\Lv2Assessment\Source\elearningStudentApply\Pay
-mvn package
-az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v2 .
-kubectl apply -f kubernetes/deployment.yml
-```
-
-* 배포전
-
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-1-deploy-before.png)
-
-* 배포중
-
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-2-deploy-create.png)
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-3-deploy-terminate.png)
-
-* 배포후
-
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-4-deploy-complete.png)
-
 ## 무정지 재배포(Readiness Probe)
 - 현재 정상적으로 동작중인 상황 확인
 
