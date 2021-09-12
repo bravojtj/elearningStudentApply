@@ -392,7 +392,7 @@ Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 
 위 결과로 서로 다른 마이크로 서비스 간에 상호 연결되어 있음을 알 수 있다.
 
 ## 폴리글랏 퍼시스턴스
-- Apply 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏 퍼시스턴스를 만족시키고 있다.
+- Apply 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏 퍼시스턴스를 만족시키고 있다.(인메모리 DB인 hsqldb 사용)
 
 **Apply의 pom.xml DB 설정 코드**
 
