@@ -31,7 +31,7 @@
 2. 수강생이 결제한다.
 3. 결제가 완료되면 신청 내역을 보낸다.
 4. 신청내역의 교재 배송을 시작한다.
-5. 주문 상태를 수강생이 조회 할 수 있다.
+5. 신청 상태를 수강생이 조회 할 수 있다.
 6. 수강생이 신청을 취소 할 수 있다.
 7. 결제 취소시 배송이 같이 취소 된다.
 
@@ -260,7 +260,7 @@ public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>
 
 - DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
 
-**원격 주문 (Apply 주문 후 결과)**
+**원격 신청 (Apply 신청 후 결과)**
 
 ![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
 
@@ -374,7 +374,7 @@ spec:
 
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
 
-위와 같이 주문을 하게되면 Apply > Pay > Delivery > MyPage로 주문이 Assigned 된다.
+위와 같이 하게되면 Apply > Pay > Delivery > MyPage 순서로 신청이 처리된다.
 
 MyPage CQRS 결과는 아래와 같다
 **Apply 실행 후 MyPages**
@@ -385,7 +385,7 @@ MyPage CQRS 결과는 아래와 같다
 
 Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 신청된 교재를 동일한 Id로 취소한다.
 
-주문 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
+신청 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
 
@@ -436,11 +436,11 @@ public interface DeliveryService {
 
 ![증빙7](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-1-delivery_stop.png)
 
-**주문 취소 요청시 결제 서비스(Pay) 변화 없음**
+**신청 취소 요청시 결제 서비스(Pay) 변화 없음**
 
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-cancel.png)
 
-**배송 서비스(Delivery) 기동 후 주문취소**
+**배송 서비스(Delivery) 기동 후 신청취소**
 
 ![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-3-delete.png)
 
