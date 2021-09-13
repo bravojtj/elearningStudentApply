@@ -390,14 +390,17 @@ http http://20.196.242.11:8080/myPages
 신규 교재 신청 정보를 등록한다.
 **Apply 등록**
 
-![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
+![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
 
 위와 같이 하게되면 Apply > Pay > Delivery > MyPage 순서로 신청이 처리된다.
+
+![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-0-apply.png)
+
 
 MyPage CQRS 결과는 아래와 같다
 **Apply 실행 후 MyPages**
 
-![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply..png)
+![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply.png)
 
 - Correlation-key 
 
