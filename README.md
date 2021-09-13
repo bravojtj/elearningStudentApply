@@ -260,9 +260,23 @@ public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>
 
 - DDD 적용 후 REST API의 테스트를 통하여 정상적으로 동작하는 것을 확인할 수 있었다.
 
-**원격 신청 (Apply 신청 후 결과)**
+**Apply서비스 교재 신청**
+```
+http POST http://20.196.242.11:8080/applies studentId="student1" studentName="홍길동1" qty=10 amount=1000 applyStatus="applied" address="seoul" bookId="001" bookName="book001"
+```
 
-![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-ddd-http.png)
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png.png)
+
+**Apply/Pag/Delivery/MyPage서비스 상세 조회**
+```
+http http://20.196.242.11:8080/applies/1
+http http://20.196.242.11:8080/pays/1
+http http://20.196.242.11:8080/deliveries/1
+http http://20.196.242.11:8080/myPages/1
+```
+
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-2-ddd-retrieve.png)
+
 
 ## GateWay 적용
 - API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
