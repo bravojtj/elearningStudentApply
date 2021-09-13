@@ -397,7 +397,7 @@ MyPage CQRS 결과는 아래와 같다
 
 **Apply 실행 후 MyPages**
 
-![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply.png)
+![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-0-apply.png)
 
 - Correlation-key 
 
