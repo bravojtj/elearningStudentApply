@@ -29,7 +29,7 @@ public class Pay {
         // kafka publish
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.setApplyStatus("payCompleted"); // modify by jjm
+        payCompleted.setApplyStatus("completed"); // modify by jjm
         payCompleted.publishAfterCommit();
 
         // modify by jjm
@@ -60,7 +60,7 @@ public class Pay {
         // kafka publish
         PayCancelled payCancelled = new PayCancelled();
         BeanUtils.copyProperties(this, payCancelled);
-        payCancelled.setApplyStatus("deliveryCancelled"); // 배송 완료 상태로 전달
+        payCancelled.setApplyStatus("cancelled"); // 배송 완료 상태로 전달
         payCancelled.publish();
 
         // req/res 패턴 처리 

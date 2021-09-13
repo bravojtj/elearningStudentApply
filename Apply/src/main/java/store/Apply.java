@@ -31,7 +31,7 @@ public class Apply {
         // kafka에 push
         Applied applied = new Applied();
         BeanUtils.copyProperties(this, applied);
-        applied.setApplyStatus("applyCompleted");
+        applied.setApplyStatus("completed");
         // applied.publishAfterCommit(); // modify by jm
         applied.publish(); 
         
@@ -52,7 +52,7 @@ public class Apply {
         // kafka에 push
         ApplyCancelled applyCancelled = new ApplyCancelled();
         BeanUtils.copyProperties(this, applyCancelled);
-        applyCancelled.setApplyStatus("applyCancelled");
+        applyCancelled.setApplyStatus("cancelled");
         applyCancelled.publishAfterCommit();
     }
     

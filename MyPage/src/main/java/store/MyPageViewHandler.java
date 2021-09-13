@@ -34,7 +34,7 @@ public class MyPageViewHandler {
             myPage.setBookName(applied.getBookName());
             myPage.setBookQty(applied.getQty());
             myPage.setAmount(applied.getAmount());
-            myPage.setApplyStatus("applyCompleted");
+            myPage.setApplyStatus("completed");
             myPage.setDeliveryAddress(applied.getAddress());
             // view 레파지 토리에 save
             myPageRepository.save(myPage);
@@ -55,7 +55,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get();
             // view 객체에 이벤트의 eventDirectValue 를 set 함
-                 myPage.setApplyStatus("applyCancelled");
+                 myPage.setApplyStatus("cancelled");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }
@@ -75,7 +75,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                 myPage.setApplyStatus("payCompleted");
+                 myPage.setApplyStatus("completed");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }
@@ -95,7 +95,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                myPage.setApplyStatus("payCancelled");
+                myPage.setApplyStatus("cancelled");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }
@@ -115,7 +115,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                myPage.setApplyStatus("deliveryCompleted");
+                myPage.setApplyStatus("completed");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }
@@ -135,7 +135,7 @@ public class MyPageViewHandler {
             if( myPageOptional.isPresent()) {
                  MyPage myPage = myPageOptional.get(); 
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                myPage.setApplyStatus("deliveryCancelled");
+                myPage.setApplyStatus("cancelled");
                 // view 레파지 토리에 save
                  myPageRepository.save(myPage);
                 }

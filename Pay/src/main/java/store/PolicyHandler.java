@@ -33,7 +33,7 @@ public class PolicyHandler{
             pay.setBookName(applyCancelled.getBookName());
             pay.setQty(applyCancelled.getQty());
             pay.setAmount(applyCancelled.getAmount());
-            pay.setApplyStatus("payCancelled");
+            pay.setApplyStatus("cancelled");
             pay.setAddress(applyCancelled.getAddress());
 
             // 레파지 토리에 save

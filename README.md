@@ -262,7 +262,7 @@ public class Apply {
     public void onPostPersist(){
         Applied applied = new Applied();
         BeanUtils.copyProperties(this, applied);
-        applied.setApplyStatus("applyCompleted");
+        applied.setApplyStatus("completed");
         applied.publish(); 
         
         Pay pay = new Pay();
@@ -363,7 +363,7 @@ public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>
 
 **Apply서비스 교재 신청**
 ```
-http POST http://20.196.242.11:8080/applies studentId="student1" studentName="홍길동1" qty=10 amount=1000 applyStatus="applied" address="seoul" bookId="001" bookName="book001"
+http POST http://20.196.242.11:8080/applies studentId="student1" studentName="홍길동" qty=10 amount=1000 applyStatus="completed" address="seoul" bookId="001" bookName="book001"
 ```
 
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
@@ -512,7 +512,7 @@ public class PayServiceImpl implements PayService {
         // kafka publish
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.setApplyStatus("payCompleted");
+        payCompleted.setApplyStatus("completed");
         payCompleted.publishAfterCommit();  
     }  
 ```
@@ -536,7 +536,7 @@ public class PolicyHandler{
         delivery.setBookName(payCompleted.getBookName());
         delivery.setQty(payCompleted.getQty());
         delivery.setAmount(payCompleted.getAmount());
-        delivery.setApplyStatus("deliveryCompleted");
+        delivery.setApplyStatus("completed");
         delivery.setDeliveryAddress(payCompleted.getAddress());
         deliveryRepository.save(delivery);
     
@@ -822,7 +822,7 @@ hystrix:
     public void onPostPersist(){
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
-        payCompleted.setApplyStatus("payCompleted");
+        payCompleted.setApplyStatus("completed");
         payCompleted.publishAfterCommit();
 
         try {
