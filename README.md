@@ -879,9 +879,8 @@ siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.1
 ```
 cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
 mvn package
-az acr build --registry grp01 --image grp01.azurecr.io/apply:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v2 .
 kubectl apply -f kubernetes/deployment.yml
-kubectl apply -f kubernetes/service.yaml
 
 ```
 
@@ -909,11 +908,11 @@ cd C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes
 kubectl apply -f deployment.yml
 ```
 
-* siege를 활용해서 워크로드를 50명, 1분간 걸어준다. (Cloud 내 siege pod에서 부하줄 것)
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c50 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
-siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.11:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
 
 * 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다
@@ -931,11 +930,9 @@ kubectl get pod
 ## 무정지 재배포(Readiness Probe)
 - 현재 정상적으로 동작중인 상황 확인
 
->>>>>>>>>>>>>> 이미지 수정 필요
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-1-readiness-all.png)
 
-![image](https://user-images.githubusercontent.com/22028798/125400383-c6add480-e3ec-11eb-8e0b-aeddf0a0c8fb.png)
-
-- order.yml 파일에 Readiness Probe 부분 설정
+* Apply 서비스 deployment.yml 파일에 Readiness Probe 부분 설정
 
 ```yaml
     readinessProbe:
@@ -953,15 +950,20 @@ kubectl get pod
 ```yaml
 cd C:\Lv2Assessment\Source\elearningStudentApply\Delivery
 mvn package
-az acr build --registry grp01 --image grp01.azurecr.io/delivery:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/delivery:v2 .
 kubectl apply -f kubernetes/deployment.yml
 ```
 
-- siege로 부하 시작 -> 가용률 100% 확인
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
+```
+kubectl exec -it pod/siege -c siege -- /bin/bash
+siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.11:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+```
 
->>>>>>>>>>>>>> 이미지 수정 필요
+* 가용률 100% 확인
 
-![image](https://user-images.githubusercontent.com/22028798/125400628-18565f00-e3ed-11eb-9c9c-ea4c64c6717d.png)
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-2-readiness-seige.png)
 
 
 
