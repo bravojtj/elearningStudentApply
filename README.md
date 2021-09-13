@@ -270,13 +270,14 @@ public class Apply {
         ApplyApplication.applicationContext.getBean(store.external.PayService.class).pay(pay);
     }
     
-    @PreRemove
-    public void onPreRemove(){
+    @PostUpdate
+    public void onPostUpdate(){
         ApplyCancelled applyCancelled = new ApplyCancelled();
         BeanUtils.copyProperties(this, applyCancelled);
+        applyCancelled.setApplyStatus("cancelled");
         applyCancelled.publishAfterCommit();
     }
-
+    
     public Long getId() {
         return id;
     }
