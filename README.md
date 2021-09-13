@@ -945,12 +945,12 @@ kubectl get pod
       failureThreshold: 10
 ```
 
-- 디플로이 시작
+* 디플로이 시작
 
 ```yaml
-cd C:\Lv2Assessment\Source\elearningStudentApply\Delivery
+cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
 mvn package
-az acr build --registry grp01 --image grp01.azurecr.io/delivery:v2 .
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v2 .
 kubectl apply -f kubernetes/deployment.yml
 ```
 

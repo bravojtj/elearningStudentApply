@@ -26,20 +26,24 @@ public class Pay {
 
     @PostPersist
     public void onPostPersist(){
+        System.out.println("################## Pay onPostPersist start");
+
+        // modify by jjm
+        // delay test시 주석해제
+        // try {
+        //        Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+        // } catch (InterruptedException e) {
+        //        e.printStackTrace();
+        // }
+        // System.out.println("################## Pay onPostPersist currentThread end");
+
         // kafka publish
         PayCompleted payCompleted = new PayCompleted();
         BeanUtils.copyProperties(this, payCompleted);
         payCompleted.setApplyStatus("completed"); // modify by jjm
         payCompleted.publishAfterCommit();
 
-        // modify by jjm
-        // delay test시 주석해제
-        //try {
-        //        Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-        //} catch (InterruptedException e) {
-        //        e.printStackTrace();
-        //}
-
+        System.out.println("################## Pay onPostPersist end");
         // 임시주석처리
         // PayCancelled payCancelled = new PayCancelled();
         // BeanUtils.copyProperties(this, payCancelled);
@@ -57,6 +61,7 @@ public class Pay {
     // add by jjm
     @PostUpdate
     public void onPostUpdate() {
+        System.out.println("################## Pay onPostUpdate start");
         // kafka publish
         PayCancelled payCancelled = new PayCancelled();
         BeanUtils.copyProperties(this, payCancelled);
@@ -68,6 +73,8 @@ public class Pay {
         BeanUtils.copyProperties(payCancelled, delivery);
         // feignclient 호출
         PayApplication.applicationContext.getBean(DeliveryService.class).deliveryCancel(delivery);
+
+        System.out.println("################## Pay onPostUpdate end");
     }
 
     public Long getId() {

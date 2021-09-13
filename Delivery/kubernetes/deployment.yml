@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: delivery
-          image: grp01.azurecr.io/delivery:v2
+          image: grp01.azurecr.io/delivery:v3
           ports:
             - containerPort: 8080
           readinessProbe:
