@@ -578,13 +578,9 @@ public class PolicyHandler{
 
 ```
 # 배송 서비스 기동
-cd rent
-mvn spring-boot:run
-
-# 배송 정보 등록 확인
 ```
 
-**배송 서비스(Delivery) Subscribe 정보  **
+**배송 서비스(Delivery) Subscribe 정보**
 ![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-3.png)
 
 
