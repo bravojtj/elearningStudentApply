@@ -25,7 +25,7 @@ public class Apply {
         System.out.println("################## Apply onPostPersist Applied");
         // configMap 설정 // add by jm
         String cfgServiceType = System.getenv("CFG_SERVICE_TYPE");
-        if(cfgServiceType == null) cfgServiceType = "STORE";
+        if(cfgServiceType == null) cfgServiceType = "DEVELOP";
         System.out.println("################## CFG_SERVICE_TYPE: " + cfgServiceType);
         
         // kafka에 push

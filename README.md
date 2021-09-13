@@ -437,7 +437,7 @@ http PUT http://20.196.242.11:8080/applies/1 studentId="student1" studentName="�
 
 - 분석단계에서의 조건 중 하나로 결제 서비스(Pay)와 배송 서비스(Delivery) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 Rest Repository에 의해 노출되어있는 REST 서비스를 FeignClient를 이용하여 호출하도록 한다.
 
-결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 ( url 은 Config Map 적용 )
+결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현
 
 **Pay 서비스 내 external.DeliveryService**
 ```java
@@ -648,7 +648,7 @@ env:
          key: svctype
 ```
 
-* Configmap 생성, 정보 확인
+* Configmap 생성, 정보 확인(servicetype - 운영환경 : PRODUCT / 개발환경 : DEVELOP)
 ```
 kubectl create configmap servicetype --from-literal=svctype=PRODUCT -n default -n default
 kubectl get configmap servicetype -o yaml
@@ -665,7 +665,7 @@ public class Apply {
     @PostPersist
     public void onPostPersist(){
         String cfgServiceType = System.getenv("CFG_SERVICE_TYPE");
-        if(cfgServiceType == null) cfgServiceType = "STORE";
+        if(cfgServiceType == null) cfgServiceType = "DEVELOP";
         System.out.println("################## CFG_SERVICE_TYPE: " + cfgServiceType);
     }
     ...
