@@ -265,7 +265,7 @@ public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>
 http POST http://20.196.242.11:8080/applies studentId="student1" studentName="홍길동1" qty=10 amount=1000 applyStatus="applied" address="seoul" bookId="001" bookName="book001"
 ```
 
-![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png.png)
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
 
 **Apply/Pag/Delivery/MyPage서비스 상세 조회**
 ```
