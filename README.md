@@ -798,7 +798,7 @@ spec:
 
 ```
 
-## 서킷 브레이킹
+## Circuit Breaker
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 * Apply -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
 * Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
@@ -816,7 +816,7 @@ hystrix:
       execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
-
+* 피호출 서비스(결제:pay) 의 부하 처리
 ```java
 // Pay 서비스 Pay.java
 
@@ -859,8 +859,6 @@ siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:80
 siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.11:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-4-siege.png)
-
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-histrixl.png)
 
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-1-siege-result.png)
 
