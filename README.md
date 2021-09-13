@@ -549,8 +549,6 @@ public class PolicyHandler{
 
         if (!payCompleted.validate()) return;
         
-        System.out.println("\n\n##### listener Delivery : " + payCompleted.toJson() + "\n\n");
-
         Delivery delivery = new Delivery();
         delivery.setId(payCompleted.getId());
         delivery.setStudentId(payCompleted.getStudentId());
@@ -572,7 +570,10 @@ public class PolicyHandler{
 # 교재신청 처리 후 교재신청 및 결제 처리 Event 진행 확인
 ```
 
+**Apply 신청**
 ![9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-6-async-1.png)
+
+**Kafka Publish 정보**
 ![10](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-7-async-2.png)
 
 ```
@@ -583,6 +584,7 @@ mvn spring-boot:run
 # 배송 정보 등록 확인
 ```
 
+**배송 서비스(Delivery) Subscribe 정보  **
 ![11](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-8-async-3.png)
 
 
