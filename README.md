@@ -429,7 +429,7 @@ http PUT http://20.196.242.11:8080/applies/1 studentId="student1" studentName="�
 
 ![증빙6](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/5-2-hsql.png)
 
-**MyPage의 hsqldb jdbc적용 서버 로그**
+**MyPage의 hsqldb 적용 서버 로그**
 
 ![증빙6](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/5-3-hsql-log.png)
 
@@ -469,7 +469,9 @@ public interface DeliveryService {
 
 **신청 취소 요청시 결제 서비스(Pay) 변화 없음**
 
-![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-cancel.png)
+![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-1-cancel.png)
+
+![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-2-cancel.png)
 
 **배송 서비스(Delivery) 기동 후 신청취소**
 
