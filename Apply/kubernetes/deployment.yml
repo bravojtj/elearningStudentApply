@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: apply
-          image: skteam33.azurecr.io/apply:v6
+          image: grp01.azurecr.io/apply:v1
           ports:
             - containerPort: 8080
           # autoscale start

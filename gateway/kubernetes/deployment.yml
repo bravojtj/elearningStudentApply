@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: skteam33.azurecr.io/gateway:v2
+          image: grp01.azurecr.io/gateway:v1
           ports:
             - containerPort: 8080
           readinessProbe:
