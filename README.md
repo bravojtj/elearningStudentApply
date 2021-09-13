@@ -388,16 +388,13 @@ http http://20.196.242.11:8080/myPages
 신청 / 결제 / 배송 서비스의 전체 현황 및 상태 조회를 제공하기 위해 MyPage를 구성하였다.
 
 신규 교재 신청 정보를 등록한다.
+
 **Apply 등록**
 
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
 
-위와 같이 하게되면 Apply > Pay > Delivery > MyPage 순서로 신청이 처리된다.
-
-![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-0-apply.png)
-
-
 MyPage CQRS 결과는 아래와 같다
+
 **Apply 실행 후 MyPages**
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-1-apply.png)
@@ -408,7 +405,16 @@ Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 
 
 신청 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
 
+**Apply서비스 교재 신청**
+```
+http PUT http://20.196.242.11:8080/applies/1 studentId="student1" studentName="홍길동" qty=10 amount=1000 applyStatus="cancelled" address="seoul" bookId="001" bookName="book001"
+```
+
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-2-apply.png)
+
+위와 같이 하게되면 Apply > Pay > Delivery > MyPage 순서로 신청이 처리된다.
+
+![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-3-apply.png)
 
 위 결과로 서로 다른 마이크로 서비스 간에 상호 연결되어 있음을 알 수 있다.
 
