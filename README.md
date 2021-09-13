@@ -130,6 +130,107 @@ cd gateway
 mvn spring-boot:run 
 ```
 
+## GateWay 적용
+- API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
+
+```yaml
+server:
+  port: 8088
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: Apply
+          uri: http://localhost:8081
+          predicates:
+            - Path=/applies/** 
+        - id: Pay
+          uri: http://localhost:8082
+          predicates:
+            - Path=/pays/** 
+        - id: Delivery
+          uri: http://localhost:8083
+          predicates:
+            - Path=/deliveries/** 
+        - id: MyPage
+          uri: http://localhost:8084
+          predicates:
+            - Path= /myPages/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: Apply
+          uri: http://Apply:8080
+          predicates:
+            - Path=/applies/** 
+        - id: Pay
+          uri: http://Pay:8080
+          predicates:
+            - Path=/pays/** 
+        - id: Delivery
+          uri: http://Delivery:8080
+          predicates:
+            - Path=/deliveries/** 
+        - id: MyPage
+          uri: http://MyPage:8080
+          predicates:
+            - Path= /myPages/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+```
+
+- gateway service.yaml에 loadBalancer 적용
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: gateway
+```
+
+**Gateway External IP**
+
+![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
+
+
 ## DDD 의 적용
 - 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 Apply 마이크로 서비스).이때 가능한 현업에서 사용하는 언어 (유비쿼터스 랭귀지)를 그대로 사용하였다.
 
@@ -265,7 +366,7 @@ public interface ApplyRepository extends PagingAndSortingRepository<Apply, Long>
 http POST http://20.196.242.11:8080/applies studentId="student1" studentName="홍길동1" qty=10 amount=1000 applyStatus="applied" address="seoul" bookId="001" bookName="book001"
 ```
 
-![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
+![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-1-ddd-reg.png)
 
 **Apply/Pag/Delivery/MyPage서비스 상세 조회**
 ```
@@ -275,108 +376,10 @@ http http://20.196.242.11:8080/deliveries/1
 http http://20.196.242.11:8080/myPages/1
 ```
 
-![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-2-ddd-retrieve.png)
+![증빙2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-2-ddd-retrieve-1.png)
 
+![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-2-ddd-retrieve-2.png)
 
-## GateWay 적용
-- API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 GateWay를 적용하였다.
-
-```yaml
-server:
-  port: 8088
----
-
-spring:
-  profiles: default
-  cloud:
-    gateway:
-      routes:
-        - id: Apply
-          uri: http://localhost:8081
-          predicates:
-            - Path=/applies/** 
-        - id: Pay
-          uri: http://localhost:8082
-          predicates:
-            - Path=/pays/** 
-        - id: Delivery
-          uri: http://localhost:8083
-          predicates:
-            - Path=/deliveries/** 
-        - id: MyPage
-          uri: http://localhost:8084
-          predicates:
-            - Path= /myPages/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-
----
-
-spring:
-  profiles: docker
-  cloud:
-    gateway:
-      routes:
-        - id: Apply
-          uri: http://Apply:8080
-          predicates:
-            - Path=/applies/** 
-        - id: Pay
-          uri: http://Pay:8080
-          predicates:
-            - Path=/pays/** 
-        - id: Delivery
-          uri: http://Delivery:8080
-          predicates:
-            - Path=/deliveries/** 
-        - id: MyPage
-          uri: http://MyPage:8080
-          predicates:
-            - Path= /myPages/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-server:
-  port: 8080
-```
-
-**8088 port로 Apply서비스 정상 호출**
-
-![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/3-gateway.png)
-
-- gateway service.yaml에 loadBalancer 적용
-```yml
-apiVersion: v1
-kind: Service
-metadata:
-  name: gateway
-  labels:
-    app: gateway
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 8080
-      targetPort: 8080
-  selector:
-    app: gateway
-```
 
 ## CQRS/Correlation-key
 - CQRS : Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
