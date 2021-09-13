@@ -382,7 +382,7 @@ http http://20.196.242.11:8080/myPages
 ![증빙3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/2-2-ddd-retrieve-2.png)
 
 
-## CQRS/Correlation-key
+## CQRS/Saga/Correlation-key
 - CQRS : Materialized View를 구현하여, 타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이)도 내 서비스의 화면 구성과 잦은 조회가 가능하게 구현해 두었다. 본 프로젝트에서 View 역할은 MyPages 서비스가 수행한다.
 
 신청 / 결제 / 배송 서비스의 전체 현황 및 상태 조회를 제공하기 위해 MyPage를 구성하였다.
@@ -403,7 +403,7 @@ MyPage CQRS 결과는 아래와 같다
 
 Correlation을 Key를 활용하기 위해 Id를 Key값으로 사용하였으며 신청된 교재를 동일한 Id로 취소한다.
 
-신청 취소가 되면 ApplyStatus가 deliveryCancelled로 Update 되는 것을 볼 수 있다.
+신청 취소가 되면 ApplyStatus가 cancelled로 Update 되는 것을 볼 수 있다.
 
 **Apply서비스 교재 신청**
 ```
@@ -416,7 +416,7 @@ http PUT http://20.196.242.11:8080/applies/1 studentId="student1" studentName="�
 
 ![증빙4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/4-3-apply.png)
 
-위 결과로 서로 다른 마이크로 서비스 간에 상호 연결되어 있음을 알 수 있다.
+위 결과로 서로 다른 마이크로 서비스 간에 ID값으로 상호 연결되어 있음을 알 수 있다.
 
 ## 폴리글랏 퍼시스턴스
 - Apply 서비스의 DB와 MyPage의 DB를 다른 DB를 사용하여 폴리글랏 퍼시스턴스를 만족시키고 있다.(인메모리 DB인 hsqldb 사용)
@@ -428,6 +428,10 @@ http PUT http://20.196.242.11:8080/applies/1 studentId="student1" studentName="�
 **MyPage의 pom.xml DB 설정 코드**
 
 ![증빙6](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/5-2-hsql.png)
+
+**MyPage의 hsqldb jdbc적용 서버 로그**
+
+![증빙6](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/5-3-hsql-log.png)
 
 ## 동기식 호출 과 Fallback 처리
 
