@@ -655,9 +655,26 @@ kubectl get configmap servicetype -o yaml
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-1-configmap.png)
 
+
+**Apply 마이크로 서비스의 Apply.java**
+```java 
+@Entity
+@Table(name="Apply_table")
+public class Apply {
+    ...
+    @PostPersist
+    public void onPostPersist(){
+        String cfgServiceType = System.getenv("CFG_SERVICE_TYPE");
+        if(cfgServiceType == null) cfgServiceType = "STORE";
+        System.out.println("################## CFG_SERVICE_TYPE: " + cfgServiceType);
+    }
+    ...
+}
+```
+
 * Apply 데이터 1건 추가 후 로그 확인
 ```
-kubectl logs {pod ID}
+kubectl logs -f {pod ID}
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-2-configmap-print.png)
 
@@ -688,75 +705,39 @@ cd gateway
 mvn package
 ```
 
-* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법1 : yml파일 이용한 deploy)
+* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(yaml파일 이용한 deploy)
 ```
 cd .. 
 cd Apply
-az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd Pay
-az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/pay:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd Delivery
-az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/delivery:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd MyPage
-az acr build --registry skteam33 --image skteam33.azurecr.io/mypage:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/mypage:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
 
 cd .. 
 cd gateway
-az acr build --registry skteam33 --image skteam33.azurecr.io/gateway:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/gateway:v1 .
 kubectl apply -f kubernetes/deployment.yml 
 kubectl apply -f kubernetes/service.yaml 
 ```
 
-
-* Azure 레지스트리에 도커 이미지 push, deploy, 서비스생성(방법2)
-```
-cd ..
-cd Apply
-az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
-kubectl create deploy apply --image=skteam33.azurecr.io/apply:v1
-kubectl expose deploy apply --type=ClusterIP --port=8080
-
-cd .. 
-cd Pay
-az acr build --registry skteam33 --image skteam33.azurecr.io/pay:v1 .
-kubectl create deploy pay --image=skteam33.azurecr.io/pay:v1
-kubectl expose deploy pay --type=ClusterIP --port=8080
-
-
-cd .. 
-cd Delivery
-az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
-kubectl create deploy delivery --image=skteam33.azurecr.io/delivery:v1
-kubectl expose deploy delivery --type=ClusterIP --port=8080
-
-cd .. 
-cd MyPage
-az acr build --registry skteam33 --image skteam33.azurecr.io/mypage:v1 .
-kubectl create deploy mypage --image=skteam33.azurecr.io/mypage:v1
-kubectl expose deploy mypage --type=ClusterIP --port=8080
-
-cd .. 
-cd gateway
-az acr build --registry skteam33 --image skteam33.azurecr.io/gateway:v1 .
-kubectl create deploy gateway --image=skteam33.azurecr.io/gateway:v1
-kubectl expose deploy gateway --type=LoadBalancer --port=8080
-
-kubectl logs {pod명}
-```
 * Service, Pod, Deploy 상태 확인
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-3-getall.png)
 
@@ -789,7 +770,7 @@ spec:
     spec:
       containers:
         - name: apply
-          image: skteam33.azurecr.io/apply:v2
+          image: grp01.azurecr.io/apply:v2
           ports:
             - containerPort: 8080
           env:
@@ -820,7 +801,7 @@ spec:
 ## 서킷 브레이킹
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 * Apply -> Pay 와의 Req/Res 연결에서 요청이 과도한 경우 CirCuit Breaker 통한 격리
-* Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 열리도록 (요청을 빠르게 실패처리, 차단) 설정
+* Hystrix 를 설정: 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 
 ```yaml
 # Apply서비스 application.yml
@@ -871,14 +852,17 @@ cd C:\Lv2Assessment\Source\elearningStudentApply\Util\siege\kubernetes
 kubectl apply -f deployment.yml
 ```
 
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 50명 60초 동안 실시
+* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
 ```
 kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c50 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
-siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.11:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
 ```
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-4-siege.png)
+
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-histrixl.png)
+
+![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/7-5-1-siege-result.png)
 
 
 
@@ -897,7 +881,7 @@ siege -c50 -t60S  -v --content-type "application/json" 'http://20.200.207.89:808
 ```
 cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
 mvn package
-az acr build --registry skteam33 --image skteam33.azurecr.io/apply:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v1 .
 kubectl apply -f kubernetes/deployment.yml
 kubectl apply -f kubernetes/service.yaml
 
@@ -971,7 +955,7 @@ kubectl get pod
 ```yaml
 cd C:\Lv2Assessment\Source\elearningStudentApply\Delivery
 mvn package
-az acr build --registry skteam33 --image skteam33.azurecr.io/delivery:v1 .
+az acr build --registry grp01 --image grp01.azurecr.io/delivery:v1 .
 kubectl apply -f kubernetes/deployment.yml
 ```
 
