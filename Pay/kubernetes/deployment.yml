@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pay
-          image: grp01.azurecr.io/pay:v1
+          image: grp01.azurecr.io/pay:v2
           ports:
             - containerPort: 8080
           readinessProbe:

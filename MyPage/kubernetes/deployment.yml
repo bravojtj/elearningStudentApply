@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: mypage
-          image: grp01.azurecr.io/mypage:v1
+          image: grp01.azurecr.io/mypage:v2
           ports:
             - containerPort: 8080
           readinessProbe:

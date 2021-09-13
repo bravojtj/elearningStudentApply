@@ -29,7 +29,7 @@ public class PolicyHandler{
         delivery.setBookName(payCompleted.getBookName());
         delivery.setQty(payCompleted.getQty());
         delivery.setAmount(payCompleted.getAmount());
-        delivery.setApplyStatus("completed");
+        delivery.setApplyStatus("completed"); 
         delivery.setDeliveryAddress(payCompleted.getAddress());
         deliveryRepository.save(delivery);
     
