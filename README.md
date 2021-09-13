@@ -469,6 +469,10 @@ public interface DeliveryService {
 
 **신청 취소 요청시 결제 서비스(Pay) 변화 없음**
 
+```
+http PUT http://20.196.242.11:8080/pay/1 studentId="student1" studentName="홍길동" qty=10 amount=1000 applyStatus="cancelled" address="seoul" bookId="001" bookName="book001"
+```
+
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-1-cancel.png)
 
 ![증빙8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-2-2-cancel.png)
