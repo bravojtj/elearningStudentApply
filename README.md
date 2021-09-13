@@ -517,8 +517,11 @@ public class PayServiceImpl implements PayService {
 
 ```
 
+**결제 서비스(Pay) 중지**
 
-**Fallback 결과(Pay service 종료 후 Apply데이터 추가 시)**
+![증빙9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-5-1-fallback.png)
+
+**Fallback 결과(Apply데이터 추가 시)**
 
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/6-5-fallback.png)
 
