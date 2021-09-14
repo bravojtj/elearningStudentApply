@@ -103,10 +103,29 @@
 
 
 # 분석/설계
+
+
    
 ## Event Storming 결과
 
-![EventStormingV1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/0-eventstorm.png)
+![EventStormingV1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-1.JPG)
+
+![EventStormingV2](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-2.JPG)
+
+![EventStormingV3](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-3.JPG)
+
+![EventStormingV4](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-4.JPG)
+
+![EventStormingV5](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-5.JPG)
+
+![EventStormingV6](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-6.JPG)
+
+![EventStormingV7](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-7.JPG)
+
+![EventStormingV8](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-8.JPG)
+
+![EventStormingV9](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/event/event-9.JPG)
+
 
 ## 헥사고날 아키텍처 다이어그램 도출
 ![증빙1](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/1-hex_diagram.png)
