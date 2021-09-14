@@ -964,8 +964,11 @@ HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://Apply:8080/applies
 ```
 
 - 새버전으로의 배포 시작
-```
-kubectl set image ...
+```yaml
+cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
+mvn package
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v2 .
+kubectl apply -f kubernetes/deployment.yml
 ```
 
 - seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
@@ -1000,7 +1003,7 @@ Concurrency:		       96.02
 ```yaml
 cd C:\Lv2Assessment\Source\elearningStudentApply\Apply
 mvn package
-az acr build --registry grp01 --image grp01.azurecr.io/apply:v2 .
+az acr build --registry grp01 --image grp01.azurecr.io/apply:v3 .
 kubectl apply -f kubernetes/deployment.yml
 ```
 
