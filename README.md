@@ -942,10 +942,45 @@ kubectl get pod
 
 
 
-## 무정지 재배포(Readiness Probe)
-- 현재 정상적으로 동작중인 상황 확인
+## 무정지 재배포
 
-![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-1-readiness-all.png)
+* 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
+
+- seige 로 배포작업 직전에 워크로드를 모니터링 함.
+```
+siege –c100 -t120S -r10 --content-type "application/json" 'http://Apply:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
+
+
+** SIEGE 4.0.5
+** Preparing 100 concurrent users for battle.
+The server is now under siege...
+
+HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://Apply:8080/applies
+HTTP/1.1 201     0.68 secs:     207 bytes ==> POST http://Apply:8080/applies
+HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://Apply:8080/applies
+HTTP/1.1 201     0.70 secs:     207 bytes ==> POST http://Apply:8080/applies
+:
+
+```
+
+- 새버전으로의 배포 시작
+```
+kubectl set image ...
+```
+
+- seige 의 화면으로 넘어가서 Availability 가 100% 미만으로 떨어졌는지 확인
+```
+Transactions:		        3078 hits
+Availability:		       70.45 %
+Elapsed time:		       120 secs
+Data transferred:	        0.34 MB
+Response time:		        5.60 secs
+Transaction rate:	       17.15 trans/sec
+Throughput:		        0.01 MB/sec
+Concurrency:		       96.02
+
+```
+배포기간중 Availability 가 평소 100%에서 70% 대로 떨어지는 것을 확인. 원인은 쿠버네티스가 성급하게 새로 올려진 서비스를 READY 상태로 인식하여 서비스 유입을 진행한 것이기 때문. 이를 막기위해 Readiness Probe 를 설정함:
 
 * Apply 서비스 deployment.yml 파일에 Readiness Probe 부분 설정
 
@@ -969,16 +1004,11 @@ az acr build --registry grp01 --image grp01.azurecr.io/apply:v2 .
 kubectl apply -f kubernetes/deployment.yml
 ```
 
-* 부하테스터 siege 툴을 통한 서킷 브레이커 동작 확인: 동시사용자 100명 60초 동안 실시
-```
-kubectl exec -it pod/siege -c siege -- /bin/bash
-siege -c100 -t60S  -v --content-type "application/json" 'http://{EXTERNAL-IP}:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
-siege –c100 –t60S  -v --content-type "application/json" 'http://20.196.242.11:8080/applies POST {"studentId":"test123", "bookId":"bok123", "qty": "11", "amount":"2000"}'
-```
-
-* 가용률 100% 확인
+- 동일한 시나리오로 재배포 한 후 Availability 확인:
 
 ![image](https://github.com/jinmojeon/elearningStudentApply/blob/main/Images/9-2-readiness-seige.png)
+
+배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
 
 
