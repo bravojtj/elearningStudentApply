@@ -9,7 +9,7 @@
   - [구현](#구현)
     - [GateWay 적용](#GateWay-적용)
     - [DDD 의 적용](#ddd-의-적용)
-    - [CQRS/saga/correlation](#CQRS/saga/correlation)    
+    - [CQRS/Saga/Correlation-key](#CQRS/Saga/Correlation-key)    
     - [폴리글랏 퍼시스턴스](#폴리글랏-퍼시스턴스)    
     - [동기식 호출 과 Fallback 처리](#동기식-호출-과-fallback-처리)
     - [비동기식 호출 과 Eventual Consistency](#비동기식-호출--시간적-디커플링--장애격리--최종-eventual-일관성-테스트)
